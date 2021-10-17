@@ -1,10 +1,8 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:messenger/const/const_color.dart';
 import 'package:messenger/models/firebase_model.dart';
 import 'package:messenger/models/store_model.dart';
-import 'package:messenger/pages/wrapper/home/chat_screen.dart';
+import 'package:messenger/pages/wrapper/home/chat_page.dart';
 import 'package:messenger/service/custom_firebase.dart';
 import 'package:messenger/service/custom_firestore.dart';
 import 'package:provider/provider.dart';
@@ -116,6 +114,7 @@ class _HomePageState extends State<HomePage> {
                           onTap: () {
                             final chatRoomId =
                                 getChatId(id, user.uid.toString());
+                            print(chatRoomId);
                             Map<String, dynamic> chatInfoRoomMap = {
                               'users': [id, user.uid]
                             };
@@ -123,9 +122,9 @@ class _HomePageState extends State<HomePage> {
                                 chatId: chatRoomId, infoData: chatInfoRoomMap);
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (_) => ChatScreen(
-                                  storeModel: user,
+                                builder: (_) => ChatPage(
                                   chatId: chatRoomId,
+                                  user: user,
                                 ),
                               ),
                             );

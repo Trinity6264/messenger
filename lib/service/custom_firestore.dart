@@ -37,7 +37,6 @@ class CustomFirestore {
   Future sendMessage({
     required String chatId,
     required String fromId,
-    required String toId,
     required String message,
     required String messageType,
   }) async {
@@ -48,7 +47,6 @@ class CustomFirestore {
         .doc(DateTime.now().microsecondsSinceEpoch.toString())
         .set({
       'fromId': fromId,
-      'toId': toId,
       'messageContent': message,
       'sentAt': DateTime.now().microsecondsSinceEpoch,
       'type': messageType,
@@ -60,7 +58,6 @@ class CustomFirestore {
     return snapshot!.docs.map((data) {
       return MessageModel(
         fromId: data['fromId'],
-        toId: data['toId'],
         messageContent: data['messageContent'],
         messageType: data['type'],
         sentTime: data['sentAt'],
