@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:messenger/models/meassge_model.dart';
 import 'package:messenger/models/store_model.dart';
+import 'package:messenger/utils/transform_chat.dart';
 
 class CustomFirestore {
   CustomFirestore._();
@@ -34,48 +35,41 @@ class CustomFirestore {
         .map(_fetchUsers);
   }
 
+  // sending chat message to firestore
   Future sendMessage({
     required String chatId,
     required String fromId,
-    required String message,
+    required String messageContent,
     required String messageType,
+    required MessageModel? reply,
   }) async {
-    return FirebaseFirestore.instance
+    final refMessage = FirebaseFirestore.instance
         .collection('chats')
         .doc(chatId)
         .collection(chatId)
-        .doc(DateTime.now().microsecondsSinceEpoch.toString())
-        .set({
-      'fromId': fromId,
-      'messageContent': message,
-      'sentAt': DateTime.now().microsecondsSinceEpoch,
-      'type': messageType,
-    });
+        .doc(DateTime.now().microsecondsSinceEpoch.toString());
+    final _modelMess = MessageModel(
+      fromId: fromId,
+      messageContent: messageContent,
+      messageType: messageType,
+      sentTime: DateTime.now(),
+      replyMessage: reply,
+    );
+    await refMessage.set(_modelMess.toJson());
   }
 
-  // get all users from fire store
-  List<MessageModel> _fetchMessage(QuerySnapshot? snapshot) {
-    return snapshot!.docs.map((data) {
-      return MessageModel(
-        fromId: data['fromId'],
-        messageContent: data['messageContent'],
-        messageType: data['type'],
-        sentTime: data['sentAt'],
-      );
-    }).toList();
-  }
-
+//  getting chat message
   Stream<List<MessageModel>> getMessages(String chatId) {
     return FirebaseFirestore.instance
         .collection('chats')
         .doc(chatId)
         .collection(chatId)
-        .orderBy('sentAt', descending: true)
+        .orderBy('sentTime', descending: true)
         .snapshots()
-        .map(_fetchMessage);
+        .transform(TransformerChat.transformer(MessageModel.fromJson));
   }
 
-// create chat room Id
+// generaing chat room Id,
   Future chatRoomId({
     required String chatId,
     required Map<String, dynamic> infoData,
@@ -89,6 +83,20 @@ class CustomFirestore {
       return;
     } else {
       _doc.set(infoData);
+    }
+  }
+
+  // Delete data
+  Future deleteData(int index, String chatId) async {
+    try {
+      final CollectionReference _ref = FirebaseFirestore.instance
+          .collection('chats')
+          .doc(chatId)
+          .collection(chatId);
+      QuerySnapshot snapshot = await _ref.get();
+      snapshot.docs[index].reference.delete();
+    } on FirebaseException catch (e) {
+      print(e.message);
     }
   }
 }

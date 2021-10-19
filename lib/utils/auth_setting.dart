@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:messenger/models/meassge_model.dart';
 
 class Authsettings with ChangeNotifier {
   bool isPressed = false;
@@ -24,6 +25,18 @@ class Authsettings with ChangeNotifier {
 
   void toggleSeen() {
     isSeen = !isSeen;
+    notifyListeners();
+  }
+
+  // on swipe chat Widget
+  MessageModel? isSwipe;
+  void toSwipe(MessageModel model) {
+    isSwipe = model;
+    notifyListeners();
+  }
+
+  void toCancelSwipe() {
+    isSwipe = null;
     notifyListeners();
   }
 }

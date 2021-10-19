@@ -107,7 +107,7 @@ class SignIn extends HookWidget {
                               TextSpan(
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () {
-                                    screenState.toggleFunc();
+                                    data.toggleFunc();
                                   },
                                 text: ' Sign Up',
                                 style: const TextStyle(

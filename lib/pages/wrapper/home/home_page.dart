@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:messenger/const/const_color.dart';
 import 'package:messenger/models/firebase_model.dart';
@@ -23,11 +24,12 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     loadLocal();
+    id = FirebaseAuth.instance.currentUser!.uid;
   }
 
-  String id = '';
   String name = '';
   String email = '';
+  String id = '';
 
   getChatId(String touserId, String fromuserId) {
     if (touserId.hashCode < fromuserId.hashCode) {
@@ -39,7 +41,6 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> loadLocal() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
-    id = _prefs.getString('uid') ?? 'no uid';
     name = _prefs.getString('name') ?? 'no name';
     email = _prefs.getString('email') ?? 'no email';
   }
@@ -56,7 +57,11 @@ class _HomePageState extends State<HomePage> {
           IconButton(
             tooltip: 'Sign Out',
             onPressed: () async {
-              return await _auth.sigOut();
+              return await _auth.sigOut().then((value) async {
+                SharedPreferences _prefs =
+                    await SharedPreferences.getInstance();
+                _prefs.clear();
+              });
             },
             icon: const Icon(Icons.logout),
           ),

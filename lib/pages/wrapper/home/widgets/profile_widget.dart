@@ -32,7 +32,7 @@ class ProfileHeaderWidget extends StatelessWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    buildIcon(Icons.call),
+                    buildIcon(Icons.call, context),
                     const SizedBox(width: 12),
                   ],
                 ),
@@ -43,12 +43,21 @@ class ProfileHeaderWidget extends StatelessWidget {
         ),
       );
 
-  Widget buildIcon(IconData icon) => Container(
-        padding: const EdgeInsets.all(5),
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white54,
+  Widget buildIcon(IconData icon, BuildContext context) => GestureDetector(
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('On It'),
+            ),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.all(5),
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white54,
+          ),
+          child: Icon(icon, size: 25, color: Colors.white),
         ),
-        child: Icon(icon, size: 25, color: Colors.white),
       );
 }
